@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+	<style>
+		@font-face {
+			font-family: "Gotham";
+			src: url("font/GothamMedium.ttf");
+		}
+
+		p {
+			font-family: "Gotham";
+			color: white;
+			margin: 0;
+			font-size: 62px;
+			white-space: nowrap;
+			text-align: center;
+			visibility: hidden;
+			text-shadow:
+				6px 3px 0 #0e0386,
+				-1px -1px 0 #0e0386,
+				1px -1px 0 #0e0386,
+				-1px 1px 0 #0e0386,
+				1px 1px 0 #0e0386;
+		}
+
+		body {
+			margin: 0px auto;
+			overflow: hidden;
+		}
+
+		#introContainer {
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			z-index: -1;
+		}
+
+		#loopContainer {
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			z-index: -1;
+			visibility: hidden;
+		}
+
+		@keyframes textReveal {
+			0% {
+				opacity: 0;
+			}
+
+			70% {
+				opacity: 0;
+			}
+
+			100% {
+				opacity: 1;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<video id="introContainer" muted>
+		<source src="resources/lower-third-intro.webm" type="video/webm">
+	</video>
+	<video id="loopContainer" muted loop>
+		<source src="resources/lower-third-loop.webm" type="video/webm">
+	</video>
+
+	<div style="position: absolute; top: 852px; left: 247px; width: 560px; height: 65px; line-height: 65px;">
+		<p id="casterNameLeft"></p>
+	</div>
+	<div style="position: absolute; top: 922px; left: 247px; width: 560px; height: 45px; line-height: 45px;">
+		<p id="casterHandleLeft" style="font-size: 35px;"></p>
+	</div>
+	<div style="position: absolute; top: 852px; left: 1112px; width: 560px; height: 65px; line-height: 65px;">
+		<p id="casterNameRight"></p>
+	</div>
+	<div style="position: absolute; top: 922px; left: 1112px; width: 560px; height: 45px; line-height: 45px;">
+		<p id="casterHandleRight" style="font-size: 35px;"></p>
+	</div>
+</body>
+
+<script>
+	var start = false;
+	var introDelay = 1000;
+	document.getElementById("introContainer").addEventListener("ended", videoEndHandler, false);
+	function videoEndHandler(e) {
+		document.getElementById("introContainer").remove();
+		document.getElementById("loopContainer").style.visibility = "visible";
+		document.getElementById("loopContainer").play();
+	}
+	nodecg.listenFor("smsUpdate", (remoteState) => {
+		if (!start) {
+			start = true;
+			if (remoteState["introDelay"] && !isNaN(remoteState["introDelay"])) {
+				introDelay = remoteState["introDelay"];
+			}
+			setTimeout(() => {
+				document.getElementById("introContainer").play();
+				$("p").css("visibility", "visible");
+				$("p").css("animation", "textReveal 3s");
+			}, introDelay);
+		}
+		if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
+			for (key in remoteState) {
+				if (remoteState[key] !== undefined) {
+					$("#" + key).text(remoteState[key])
+				}
+			}
+		}
+		if (remoteState["lowerThirdEnableVideo"]) {
+			document.getElementById("loopContainer").style.opacity = 1;
+			document.getElementById("introContainer").style.opacity = 1;
+		} else {
+			document.getElementById("loopContainer").style.opacity = 0;
+			document.getElementById("introContainer").style.opacity = 0;
+		}
+	});
+	$(document).ready(function () {
+		nodecg.sendMessage("smsStateRequest")
+	});
+</script>
+
+</html>

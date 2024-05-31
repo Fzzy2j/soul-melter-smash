@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+<head>
+	<meta charset="UTF-8">
+	<style>
+		@font-face {
+			font-family: "Gotham";
+			src: url("font/GothamMedium.ttf");
+		}
+
+		p {
+			font-family: "Gotham";
+			color: white;
+			margin: 0;
+			font-size: 62px;
+			white-space: nowrap;
+			text-align: center;
+			text-shadow:
+				6px 3px 0 #0e0386,
+				-1px -1px 0 #0e0386,
+				1px -1px 0 #0e0386,
+				-1px 1px 0 #0e0386,
+				1px 1px 0 #0e0386;
+		}
+
+		body {
+			margin: 0px auto;
+			overflow: hidden;
+		}
+
+		#inGameContainer {
+			position: absolute;
+			left: 0;
+			top: -150px;
+			z-index: -1;
+		}
+	</style>
+</head>
+
+<body>
+	<video id="inGameContainer" autoplay muted loop>
+		<source src="resources/in-game-nosponsor.webm" type="video/webm">
+	</video>
+
+	<div style="position: absolute; top: 68px; left: 767px; width: 95px; height: 85px; line-height: 65px;">
+		<p id="scoreLeft">0</p>
+	</div>
+	<div style="position: absolute; top: 68px; left: 1055px; width: 95px; height: 85px; line-height: 65px;">
+		<p id="scoreRight">0</p>
+	</div>
+	<div style="position: absolute; top: 75px; left: 380px; width: 340px; height: 85px; line-height: 65px;">
+		<p id="playerLeft" style="font-size: 52px;">0</p>
+	</div>
+	<div style="position: absolute; top: 75px; left: 1200px; width: 350px; height: 85px; line-height: 65px;">
+		<p id="playerRight" style="font-size: 52px;">0</p>
+	</div>
+
+	<script>
+		var startingFontSizes = {}
+		function setText(target, text) {
+			var desiredWidth = $(target).parent().width();
+			var targetElement = $(target)
+			var resizer = $("#hidden-resizer")
+			var maxFontSize = startingFontSizes[target]
+			if (maxFontSize === undefined) {
+				maxFontSize = targetElement.css("font-size")
+				startingFontSizes[target] = maxFontSize
+			}
+			resizer.html(text)
+			resizer.css("font-size", maxFontSize)
+			resizer.css("font-family", targetElement.css("font-family"))
+
+			var size = 0
+			while (resizer.width() > desiredWidth) {
+				size = parseInt(resizer.css("font-size"), 10);
+				resizer.css("font-size", size - 1);
+			}
+			size = parseInt(resizer.css("font-size"), 10);
+			resizer.css("font-size", size - 1);
+			targetElement.css("font-size", size).html(resizer.html());
+		}
+		function getTextSize(text, fontSize) {
+			var resizer = $("#hidden-resizer");
+			resizer.html(text);
+			resizer.css("font-size", fontSize);
+			return resizer.width()
+		}
+		$(document).ready(function () {
+			$('<div />', { id: 'hidden-resizer' }).hide().appendTo(document.body);
+			nodecg.sendMessage("smsStateRequest")
+		})
+
+		var hitsounds = [];
+		const hitsoundsRep = nodecg.Replicant("assets:hitsounds");
+		hitsoundsRep.on("change", (newValue) => { hitsounds = newValue; })
+
+		nodecg.listenFor("smsFlashyScore", (params) => {
+			var chosenSound = false;
+			if (hitsounds.length > 0) {
+				const random = Math.floor(Math.random() * hitsounds.length);
+				chosenSound = hitsounds[random].url;
+			}
+			if (params["scoreRight"] === 1 || params["scoreRight"] === 2 || params["scoreRight"] === 3 ||
+				params["scoreLeft"] === 1 || params["scoreLeft"] === 2 || params["scoreLeft"] === 3
+			) {
+				if ($("#flashy").length === 0) {
+					const side = params["scoreLeft"] ? "Left" : "Right";
+					$("#score" + side).hide();
+					$(document.body).append("<audio id='flashySound' autoplay><source src='resources/flashy-sound.mp3' type='audio/mp3'></audio>");
+					$("#flashySound").on("ended", function () {
+						$("#flashySound").remove();
+					})
+					setTimeout(() => {
+						$(document.body).append("<video id='flashy' autoplay muted><source src='resources/to-" + params["score" + side] + "-" + side.toLowerCase() + ".webm' type='video/webm'></video>");
+						$("#flashy").on("ended", function () {
+							$("#score" + side).show();
+							$("#flashy").remove();
+						})
+					}, 100);
+					if (chosenSound) {
+						setTimeout(() => {
+							$(document.body).append("<audio id='flashyHitSound' autoplay><source src='" + chosenSound + "'></audio>");
+							$("#flashyHitSound").on("ended", function () {
+								$("#flashyHitSound").remove();
+							})
+						}, 450);
+					}
+				}
+			}
+		})
+
+		nodecg.listenFor("smsUpdate", (remoteState) => {
+			if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
+				for (key in remoteState) {
+					if (remoteState[key] !== undefined) {
+						var element = $("#" + key)
+						if (element.is("input")) element.val(remoteState[key])
+						if (element.is("p")) setText("#" + key, remoteState[key])//element.text(remoteState[key])
+					}
+				}
+			}
+			if (remoteState["inGameEnableVideo"]) {
+				document.getElementById("inGameContainer").style.opacity = 1;
+			} else {
+				document.getElementById("inGameContainer").style.opacity = 0;
+			}
+		})
+	</script>
+</body>
+
+</html>
