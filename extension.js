@@ -1,12 +1,25 @@
 const fs = require('fs')
 
-var state = {}
+var state = {
+	casterNameLeft: "casterLeft",
+	casterHandleLeft: "casterHandleLeft",
+	casterNameRight: "casterNameRight",
+	casterHandleRight: "casterHandleRight",
+	lowerThirdIntroDelay: 1000,
+	lowerThirdEnableVideo: true,
+	playerLeft: "playerLeft",
+	scoreleft: "scoreLeft",
+	playerRight: "playerRight",
+	scoreRight: "scoreRight",
+	inGameEnableVideo: true,
+}
 if (fs.existsSync('./smsState.json')) {
 	state = JSON.parse(fs.readFileSync("./smsState.json"))
 }
 
 module.exports = nodecg => {
 	function sendDataUpdate(ignoreId) {
+		console.log(state);
 		state.socketId = ignoreId
 		nodecg.sendMessage('smsUpdate', state)
 		delete state.socketId

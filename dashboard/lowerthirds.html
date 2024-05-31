@@ -51,7 +51,7 @@
 	<button tabindex="-1" onclick="flipCasters()">Flip Casters</button>
 	<button tabindex="-1" onclick="resetCasters()">Reset</button>
 	<p>INTRO DELAY</p>
-	<input tabindex="11" id="introDelay" type="number" autocomplete="off" oninput="updateModifiedColors()"
+	<input tabindex="11" id="lowerThirdIntroDelay" type="number" autocomplete="off" oninput="updateModifiedColors()"
 		style="width:170px">
 	<br>
 	<input tabindex="-1" id="lowerThirdEnableVideo" type="checkbox" oninput="updateState()" style="width: 25px">
@@ -64,6 +64,7 @@
 		})
 		var stateCache = {}
 		nodecg.listenFor("smsUpdate", (remoteState) => {
+			console.log(remoteState);
 			if (remoteState.socketId == undefined || remoteState.socketId !== nodecg.socket.id) {
 				for (key in remoteState) {
 					if (remoteState[key] !== undefined) {

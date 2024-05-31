@@ -96,8 +96,8 @@
 	nodecg.listenFor("smsUpdate", (remoteState) => {
 		if (!start) {
 			start = true;
-			if (remoteState["introDelay"] && !isNaN(remoteState["introDelay"])) {
-				introDelay = remoteState["introDelay"];
+			if (remoteState["lowerThirdIntroDelay"] && !isNaN(remoteState["lowerThirdIntroDelay"])) {
+				introDelay = remoteState["lowerThirdIntroDelay"];
 			}
 			setTimeout(() => {
 				document.getElementById("introContainer").play();
