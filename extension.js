@@ -2,15 +2,15 @@ const fs = require('fs')
 
 var state = {
 	casterNameLeft: "casterLeft",
-	casterHandleLeft: "casterHandleLeft",
+	casterHandleLeft: "@casterHandleLeft",
 	casterNameRight: "casterNameRight",
-	casterHandleRight: "casterHandleRight",
+	casterHandleRight: "@casterHandleRight",
 	lowerThirdIntroDelay: 1000,
 	lowerThirdEnableVideo: true,
 	playerLeft: "playerLeft",
-	scoreleft: "scoreLeft",
+	scoreLeft: 0,
 	playerRight: "playerRight",
-	scoreRight: "scoreRight",
+	scoreRight: 0,
 	inGameEnableVideo: true,
 }
 if (fs.existsSync('./smsState.json')) {
