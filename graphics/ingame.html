@@ -30,19 +30,60 @@
 			overflow: hidden;
 		}
 
-		#inGameContainer {
+		.scoreboard {
 			position: absolute;
 			left: 0;
 			top: -150px;
 			z-index: -1;
 		}
+
+		.slide {
+			max-width: 245px;
+			max-height: 58px;
+			vertical-align: middle;
+		}
+
+		.slideContainer {
+			position: absolute;
+			white-space: nowrap;
+			text-align: center;
+			width: 65px;
+			height: 80px;
+		}
+
+		.helper {
+			display: inline-block;
+			height: 100%;
+			vertical-align: middle;
+		}
 	</style>
 </head>
 
 <body>
-	<video id="inGameContainer" autoplay muted loop>
+	<video id="inGameContainerSponsor" class="scoreboard" autoplay muted loop>
+		<source src="resources/in-game-sponsor.webm" type="video/webm">
+	</video>
+	<video id="inGameContainerNoSponsor" class="scoreboard" autoplay muted loop style="display: none;">
 		<source src="resources/in-game-nosponsor.webm" type="video/webm">
 	</video>
+	<video id="inGameContainerLeftSponsor" class="scoreboard" autoplay muted loop style="display: none;">
+		<source src="resources/in-game-leftsponsor.webm" type="video/webm">
+	</video>
+	<video id="inGameContainerRightSponsor" class="scoreboard" autoplay muted loop style="display: none;">
+		<source src="resources/in-game-rightsponsor.webm" type="video/webm">
+	</video>
+
+	<div style="position: absolute; top: 70px; left: 300px;">
+		<div class="slideContainer">
+			<span class="helper"></span><img id="playerLeftSponsor" class="slide" src="">
+		</div>
+	</div>
+
+	<div style="position: absolute; top: 70px; right: 358px;">
+		<div class="slideContainer">
+			<span class="helper"></span><img id="playerRightSponsor" class="slide" src="">
+		</div>
+	</div>
 
 	<div style="position: absolute; top: 68px; left: 767px; width: 95px; height: 85px; line-height: 65px;">
 		<p id="scoreLeft">0</p>
@@ -138,15 +179,48 @@
 						var element = $("#" + key)
 						if (element.is("input")) element.val(remoteState[key])
 						if (element.is("p")) setText("#" + key, remoteState[key])//element.text(remoteState[key])
+						if (element.is("img")) element.prop("src", remoteState[key])
 					}
 				}
 			}
 			if (remoteState["inGameEnableVideo"]) {
-				document.getElementById("inGameContainer").style.opacity = 1;
+				document.getElementById("inGameContainerSponsor").style.opacity = 1;
+				document.getElementById("inGameContainerNoSponsor").style.opacity = 1;
+				document.getElementById("inGameContainerLeftSponsor").style.opacity = 1;
+				document.getElementById("inGameContainerRightSponsor").style.opacity = 1;
 			} else {
-				document.getElementById("inGameContainer").style.opacity = 0;
+				document.getElementById("inGameContainerSponsor").style.opacity = 0;
+				document.getElementById("inGameContainerNoSponsor").style.opacity = 0;
+				document.getElementById("inGameContainerLeftSponsor").style.opacity = 0;
+				document.getElementById("inGameContainerRightSponsor").style.opacity = 0;
+			}
+			if (remoteState["playerLeftSponsor"] && remoteState["playerRightSponsor"]) {
+				$("#inGameContainerSponsor").show();
+
+				$("#inGameContainerNoSponsor").hide();
+				$("#inGameContainerLeftSponsor").hide();
+				$("#inGameContainerRightSponsor").hide();
+			} else if (remoteState["playerLeftSponsor"] && !remoteState["playerRightSponsor"]) {
+				$("#inGameContainerLeftSponsor").show();
+
+				$("#inGameContainerSponsor").hide();
+				$("#inGameContainerNoSponsor").hide();
+				$("#inGameContainerRightSponsor").hide();
+			} else if (!remoteState["playerLeftSponsor"] && remoteState["playerRightSponsor"]) {
+				$("#inGameContainerRightSponsor").show();
+
+				$("#inGameContainerSponsor").hide();
+				$("#inGameContainerNoSponsor").hide();
+				$("#inGameContainerLeftSponsor").hide();
+			} else {
+				$("#inGameContainerNoSponsor").show();
+				
+				$("#inGameContainerSponsor").hide();
+				$("#inGameContainerLeftSponsor").hide();
+				$("#inGameContainerRightSponsor").hide();
 			}
 		})
 	</script>
 </body>
+
 </html>

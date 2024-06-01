@@ -24,14 +24,14 @@
       {
         "name": "lowerthirds",
         "title": "Lower Thirds",
-        "width": 3,
+        "width": 4,
         "file": "lowerthirds.html",
         "headerColor": "#525F78"
       },
       {
         "name": "ingame",
         "title": "In Game",
-        "width": 3,
+        "width": 4,
         "file": "ingame.html",
         "headerColor": "#525F78"
       }
@@ -49,6 +49,11 @@
       }
     ],
     "assetCategories": [
+      {
+        "name": "sponsorlogos",
+        "title": "Sponsor Logos",
+        "allowedTypes": ["jpg", "jpeg", "gif", "png"]
+      },
       {
         "name": "hitsounds",
         "title": "Flashy Hit Sounds",

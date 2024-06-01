@@ -19,7 +19,6 @@ if (fs.existsSync('./smsState.json')) {
 
 module.exports = nodecg => {
 	function sendDataUpdate(ignoreId) {
-		console.log(state);
 		state.socketId = ignoreId
 		nodecg.sendMessage('smsUpdate', state)
 		delete state.socketId
