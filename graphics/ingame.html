@@ -162,8 +162,8 @@
 					})*/
 					setTimeout(() => {
 						$("#flashySource").prop("src", "resources/to-" + params["score" + side] + "-" + side.toLowerCase());
-						//$("#flashySource")[0].load();
-						//$("#flashy").trigger("play");
+						$("#flashySource")[0].load();
+						$("#flashy").trigger("play");
 					}, 100);
 					/*if (chosenSound) {
 						setTimeout(() => {
