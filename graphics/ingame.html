@@ -73,10 +73,6 @@
 		<source src="resources/in-game-rightsponsor.webm" type="video/webm">
 	</video>
 
-	<video id='flashy' muted>
-		<source id="flashySource" src='' type='video/webm'>
-	</video>
-
 	<div style="position: absolute; top: 70px; left: 300px;">
 		<div class="slideContainer">
 			<span class="helper"></span><img id="playerLeftSponsor" class="slide" src="">
@@ -135,9 +131,6 @@
 		$(document).ready(function () {
 			$('<div />', { id: 'hidden-resizer' }).hide().appendTo(document.body);
 			nodecg.sendMessage("smsStateRequest")
-			$("#flashy").on("ended", function () {
-				$("#score" + side).show();
-			})
 		})
 
 		var hitsounds = [];
@@ -156,23 +149,25 @@
 				if ($("#flashy").length === 0) {
 					const side = params["scoreLeft"] ? "Left" : "Right";
 					$("#score" + side).hide();
-					/*$(document.body).append("<audio id='flashySound' autoplay><source src='resources/flashy-sound.mp3' type='audio/mp3'></audio>");
+					$(document.body).append("<audio id='flashySound' autoplay><source src='resources/flashy-sound.mp3' type='audio/mp3'></audio>");
 					$("#flashySound").on("ended", function () {
 						$("#flashySound").remove();
-					})*/
+					})
 					setTimeout(() => {
-						$("#flashySource").prop("src", "resources/to-" + params["score" + side] + "-" + side.toLowerCase());
-						$("#flashySource")[0].load();
-						$("#flashy").trigger("play");
+						$(document.body).append("<video id='flashy' autoplay muted><source src='resources/to-" + params["score" + side] + "-" + side.toLowerCase() + ".webm' type='video/webm'></video>");
+						$("#flashy").on("ended", function () {
+							$("#score" + side).show();
+							$("#flashy").remove();
+						})
 					}, 100);
-					/*if (chosenSound) {
+					if (chosenSound) {
 						setTimeout(() => {
 							$(document.body).append("<audio id='flashyHitSound' autoplay><source src='" + chosenSound + "'></audio>");
 							$("#flashyHitSound").on("ended", function () {
 								$("#flashyHitSound").remove();
 							})
 						}, 450);
-					}*/
+					}
 				}
 			}
 		})
@@ -219,7 +214,7 @@
 				$("#inGameContainerLeftSponsor").hide();
 			} else {
 				$("#inGameContainerNoSponsor").show();
-
+				
 				$("#inGameContainerSponsor").hide();
 				$("#inGameContainerLeftSponsor").hide();
 				$("#inGameContainerRightSponsor").hide();
