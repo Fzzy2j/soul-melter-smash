@@ -98,6 +98,25 @@
 		<p id="playerRight" style="font-size: 52px;">0</p>
 	</div>
 
+	<video id='flashyTo1Left' muted style="position: absolute; top: 0; left: 0; opacity: 0;" preload="auto">
+		<source src='resources/to-1-left.webm' type='video/webm'>
+	</video>
+	<video id='flashyTo2Left' muted style="position: absolute; top: 0; left: 0; opacity: 0;" preload="auto">
+		<source src='resources/to-2-left.webm' type='video/webm'>
+	</video>
+	<video id='flashyTo3Left' muted style="position: absolute; top: 0; left: 0; opacity: 0;" preload="auto">
+		<source src='resources/to-3-left.webm' type='video/webm'>
+	</video>
+	<video id='flashyTo1Right' muted style="position: absolute; top: 0; left: 0; opacity: 0;" preload="auto">
+		<source src='resources/to-1-right.webm' type='video/webm'>
+	</video>
+	<video id='flashyTo2Right' muted style="position: absolute; top: 0; left: 0; opacity: 0;" preload="auto">
+		<source src='resources/to-2-right.webm' type='video/webm'>
+	</video>
+	<video id='flashyTo3Right' muted style="position: absolute; top: 0; left: 0; opacity: 0;" preload="auto">
+		<source src='resources/to-3-right.webm' type='video/webm'>
+	</video>
+
 	<script>
 		var startingFontSizes = {}
 		function setText(target, text) {
@@ -146,28 +165,29 @@
 			if (params["scoreRight"] === 1 || params["scoreRight"] === 2 || params["scoreRight"] === 3 ||
 				params["scoreLeft"] === 1 || params["scoreLeft"] === 2 || params["scoreLeft"] === 3
 			) {
-				if ($("#flashy").length === 0) {
-					const side = params["scoreLeft"] ? "Left" : "Right";
-					$("#score" + side).hide();
-					$(document.body).append("<audio id='flashySound' autoplay><source src='resources/flashy-sound.mp3' type='audio/mp3'></audio>");
-					$("#flashySound").on("ended", function () {
-						$("#flashySound").remove();
+				const side = params["scoreLeft"] ? "Left" : "Right";
+				$("#score" + side).hide();
+				$(document.body).append("<audio id='flashySound' autoplay><source src='resources/flashy-sound.mp3' type='audio/mp3'></audio>");
+				$("#flashySound").on("ended", function () {
+					$("#flashySound").remove();
+				})
+				setTimeout(() => {
+					$("#flashyTo" + params["score" + side] + side)[0].play();
+					$("#flashyTo" + params["score" + side] + side).css("opacity", 1);
+					$("#flashyTo" + params["score" + side] + side).on("ended", function () {
+						$("#score" + side).show();
+						$("#flashyTo" + params["score" + side] + side).css("opacity", 0);
+						$("#flashyTo" + params["score" + side] + side).off("ended");
+						$("#flashyTo" + params["score" + side] + side)[0].currentTime = 0;
 					})
+				}, 100);
+				if (chosenSound) {
 					setTimeout(() => {
-						$(document.body).append("<video id='flashy' autoplay muted><source src='resources/to-" + params["score" + side] + "-" + side.toLowerCase() + ".webm' type='video/webm'></video>");
-						$("#flashy").on("ended", function () {
-							$("#score" + side).show();
-							$("#flashy").remove();
+						$(document.body).append("<audio id='flashyHitSound' autoplay><source src='" + chosenSound + "'></audio>");
+						$("#flashyHitSound").on("ended", function () {
+							$("#flashyHitSound").remove();
 						})
-					}, 100);
-					if (chosenSound) {
-						setTimeout(() => {
-							$(document.body).append("<audio id='flashyHitSound' autoplay><source src='" + chosenSound + "'></audio>");
-							$("#flashyHitSound").on("ended", function () {
-								$("#flashyHitSound").remove();
-							})
-						}, 450);
-					}
+					}, 450);
 				}
 			}
 		})
@@ -214,7 +234,7 @@
 				$("#inGameContainerLeftSponsor").hide();
 			} else {
 				$("#inGameContainerNoSponsor").show();
-				
+
 				$("#inGameContainerSponsor").hide();
 				$("#inGameContainerLeftSponsor").hide();
 				$("#inGameContainerRightSponsor").hide();

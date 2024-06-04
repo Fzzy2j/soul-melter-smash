@@ -26,14 +26,14 @@
         "title": "Lower Thirds",
         "width": 4,
         "file": "lowerthirds.html",
-        "headerColor": "#525F78"
+        "headerColor": "#097969"
       },
       {
         "name": "ingame",
         "title": "In Game",
         "width": 4,
         "file": "ingame.html",
-        "headerColor": "#525F78"
+        "headerColor": "#880808"
       }
     ],
     "graphics": [
